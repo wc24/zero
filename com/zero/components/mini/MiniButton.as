@@ -18,10 +18,6 @@ package com.zero.components.mini {
 			__overSkin = new Sprite()
 			__outSkin = new Sprite()
 			__enabledSkin = new Sprite()
-			addChild(__enabledSkin)
-			addChild(__outSkin)
-			addChild(__overSkin)
-			addChild(__label)
 		}
 		
 		override public function draw(drawPart:String):void {

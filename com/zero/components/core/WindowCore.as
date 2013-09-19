@@ -1,13 +1,14 @@
 package com.zero.components.core {
+	import com.zero.components.utils.bound;
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-	
+	import flash.geom.Rectangle;
 	/**
 	 * ...
 	 * @author 蓝面包
 	 */
-	public class WindowCore extends Component {
+	public class WindowCore extends Component implements IDragObject {
 		//protected var __minimizeButton:ButtonCore;
 		//protected var __closeButton:ButtonCore;
 		//protected var __background:DisplayObject
@@ -15,7 +16,7 @@ package com.zero.components.core {
 		protected var __titlePanel:PanelCore
 		protected var _title:String;
 		protected var _draggable:Boolean = true;
-		
+		protected var _drager:Drager;
 		public function WindowCore(title:String = "", width:int = 100, height:int = 100) {
 			_title = title;
 			_width = width;
@@ -27,53 +28,54 @@ package com.zero.components.core {
 			if (__titleLabel != null) {
 				__titlePanel.addChild(__titleLabel)
 			}
-			addChild(__titlePanel)
+			super.addChild(__titlePanel)
+			_drager = new Drager()
+			_drager.action(this, __titlePanel);
+			_drager.boundStage = true;
 			__titlePanel.addEventListener(MouseEvent.MOUSE_DOWN, titlePanel_mouseDown);
+			addEventListener(Event.ADDED_TO_STAGE, addedToStage);
 		}
-		
+		private function addedToStage(e:Event):void {
+			removeEventListener(Event.ADDED_TO_STAGE, addedToStage);
+			addEventListener(Event.REMOVED_FROM_STAGE, removedFromStage);
+			stage.addEventListener(Event.RESIZE, resize);
+		}
+		private function resize(e:Event):void {
+			x = bound(x, 0, stage.stageWidth - _width);
+			y = bound(y, 0, stage.stageHeight - _height);
+		}
+		private function removedFromStage(e:Event):void {
+			removeEventListener(Event.REMOVED_FROM_STAGE, removedFromStage);
+			stage.removeEventListener(Event.RESIZE, resize);
+			addEventListener(Event.ADDED_TO_STAGE, addedToStage);
+		}
 		private function titlePanel_mouseDown(e:Event):void {
-			if (_draggable) {
-				this.startDrag();
-				stage.addEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
-				parent.addChild(this); // move to top
-			}
+			parent.addChild(this); // move to top
 			dispatchEvent(new ComponentEvent(ComponentEvent.SELECT, this));
 		}
-		
-		private function stage_mouseUp(e:Event):void {
-			this.stopDrag();
-			stage.removeEventListener(MouseEvent.MOUSE_UP, stage_mouseUp);
-		}
-		
 		override public function draw():void {
 			if (checkPart(DrawPart.SIZE)) {
 				__titleLabel.x = width / 2 - __titleLabel.width / 2;
 			}
 		}
-		
 		override public function get width():Number {
 			return super.width;
 		}
-		
 		override public function set width(value:Number):void {
 			super.width = value;
 			__titlePanel.width = value;
 		}
-		
 		public function get title():String {
 			return _title;
 		}
-		
 		public function set title(value:String):void {
 			_title = value;
 			__titleLabel.text = _title;
 			redraw(DrawPart.SIZE)
 		}
-		
 		public function get draggable():Boolean {
 			return _draggable;
 		}
-		
 		public function set draggable(value:Boolean):void {
 			_draggable = value;
 			__titlePanel.buttonMode = _draggable;

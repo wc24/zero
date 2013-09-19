@@ -2,7 +2,6 @@ package com.zero.components.core {
 	import flash.display.DisplayObject;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
-	
 	/**
 	 * ...
 	 * @author 蓝面包
@@ -14,7 +13,6 @@ package com.zero.components.core {
 		protected var __outSkin:DisplayObject;
 		protected var __enabledSkin:DisplayObject;
 		protected var __labelCore:LabelCore;
-		
 		public function ButtonCore(label:String = "") {
 			_label = label;
 			super()
@@ -24,8 +22,11 @@ package com.zero.components.core {
 			useHandCursor = true;
 			addEventListener(MouseEvent.MOUSE_OVER, mouseOver);
 			addEventListener(MouseEvent.MOUSE_OUT, mouseOut);
+			tryAddChild(__enabledSkin)
+			tryAddChild(__outSkin)
+			tryAddChild(__overSkin)
+			tryAddChild(__label)
 		}
-		
 		override public function draw():void {
 			if (checkPart(DrawPart.STATE, DrawPart.ENABLED)) {
 				if (__outSkin) {
@@ -39,29 +40,23 @@ package com.zero.components.core {
 				}
 			}
 		}
-		
 		private function mouseOut(e:MouseEvent):void {
 			_isOver = false;
 			redraw(DrawPart.STATE);
 		}
-		
 		private function mouseOver(e:MouseEvent):void {
 			_isOver = true;
 			redraw(DrawPart.STATE);
 		}
-		
 		public function get labelCore():LabelCore {
 			return __labelCore;
 		}
-		
 		public function set labelCore(value:LabelCore):void {
 			__labelCore = value;
 		}
-		
 		public function get label():String {
 			return _label;
 		}
-		
 		public function set label(value:String):void {
 			__labelCore.text = value;
 			_label = value;

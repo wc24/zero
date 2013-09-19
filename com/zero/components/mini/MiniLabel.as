@@ -19,7 +19,6 @@ package com.zero.components.mini {
 			__textField.embedFonts = true;
 			__textField.defaultTextFormat = MiniStyle.defaultTextFormat;
 			__color = int(MiniStyle.defaultTextFormat.color);
-			addChild(__textField)
 		}
 	}
 }
